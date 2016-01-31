@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<script src="stockdata.js"></script>
+	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+
+	<nav class="navbar navbar-default">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="http://stockcache.net/">Stock Cache</a>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-6 col-md-3">
+				<input class="form-control" type="text" id="txtTicker" placeholder="ticker (e.g. TEL)"></input>
+			</div>
+			<div class="col-xs-6 col-md-3">
+				<input class="form-control" type="text" id="txtQuery" placeholder="query (e.g. @open>2.05,@close<1.98)"></input>
+			</div>
+		</div>
+		<br/>
+		<div class="row">
+			<div class="col-xs-6 col-md-2">
+				<button class="btn btn-primary" id="btnGet">Get Stock Data</button>
+			</div>
+		</div>
+		<br/>
+		<div class="row">
+			<div class="col-xs-12 col-md-12">
+				<table class="table table-bordered table-striped" id="content"/>
+			</div>
+			<div style="display:none" id="loading">
+				<img src="hourglass.svg"/>
+			</div>
+		</div>
+	</div>
+	
+	<script>
+		document.getElementById('btnGet').addEventListener('click', function() {
+	
+			document.getElementById('loading').style.display = 'block';
+			
+			var ticker = document.getElementById('txtTicker').value;
+			var query = document.getElementById('txtQuery').value;
+			StockDataTable( 'content', ticker, query ? query : false, function() {
+				document.getElementById('loading').style.display = 'none';
+			});
+	
+		}, false);
+	</script>
+	
+	
+</body>
+
+</html>
