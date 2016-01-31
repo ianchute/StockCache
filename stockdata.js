@@ -39,7 +39,7 @@ function StockDataTable(id, ticker, query, callback) {
 		
 		contentElement.innerHTML = content;
 		
-		callback();
+		callback(data);
 		
 	});
 	

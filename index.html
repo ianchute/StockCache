@@ -2,7 +2,9 @@
 <html lang="en">
 
 <head>
-	<script src="stockdata.js"></script>
+	<script type="text/javascript" src="linq.min.js"></script>
+	<script type="text/javascript" src="stockdata.js"></script>
+	<script type="text/javascript" src="chutychart.js"></script>
 	<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -19,10 +21,10 @@
 
 	<div class="container">
 		<div class="row">
-			<div class="col-xs-6 col-md-3">
+			<div class="col-xs-12 col-md-2">
 				<input class="form-control" type="text" id="txtTicker" placeholder="ticker (e.g. TEL)"></input>
 			</div>
-			<div class="col-xs-6 col-md-3">
+			<div class="col-xs-12 col-md-5">
 				<input class="form-control" type="text" id="txtQuery" placeholder="query (e.g. @open>2.05,@close<1.98)"></input>
 			</div>
 		</div>
@@ -34,24 +36,37 @@
 		</div>
 		<br/>
 		<div class="row">
-			<div class="col-xs-12 col-md-12">
-				<table class="table table-bordered table-striped" id="content"/>
-			</div>
-			<div style="display:none" id="loading">
+			<div class="col-xs-12 col-md-12" style="display:none" id="loading">
 				<img src="hourglass.svg"/>
+			</div>
+		</div>
+		<br/>
+		<div class="row">
+			<div class="col-xs-12 col-md-12">
+				<canvas id="dataCanvas" height="400px" />
+			</div>
+		</div>
+		<br/>
+		<div class="row">
+			<div class="col-xs-12 col-md-12">
+				<table class="table table-bordered table-striped" id="content"></table>
 			</div>
 		</div>
 	</div>
 	
-	<script>
+	<script type="text/javascript">
 		document.getElementById('btnGet').addEventListener('click', function() {
 	
 			document.getElementById('loading').style.display = 'block';
+			document.getElementById('dataCanvas').style.display = 'none';
 			
 			var ticker = document.getElementById('txtTicker').value;
 			var query = document.getElementById('txtQuery').value;
-			StockDataTable( 'content', ticker, query ? query : false, function() {
+			StockDataTable( 'content', ticker, query ? query : false, function(data) {
 				document.getElementById('loading').style.display = 'none';
+				document.getElementById('dataCanvas').style.display = 'block';
+				document.getElementById('dataCanvas').width = document.getElementById('content').offsetWidth;
+				ChutyChart('dataCanvas', data);
 			});
 	
 		}, false);
