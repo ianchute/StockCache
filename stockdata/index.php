@@ -141,13 +141,9 @@ if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
 		
 		$parsedResult = from('$p')->in($parsedResult)
 			->where('$p => ' . $query)
-                        ->select('$p');
+            ->select('$p');
 	}
-	
-$parsedResult = from('$p')->in($parsedResult)
-                        ->orderByDescending('$p => $p->date')
-			->select('$p');
 
-	echo json_encode( $parsedResult );
+	echo json_encode( array_reverse( $parsedResult ) );
 
 ?>

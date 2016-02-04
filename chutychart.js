@@ -19,8 +19,16 @@
 		
 	};
 	
-	function ChutyChart(id, data, customHeight, customThickness) {
-		
+    function ChutyChart(id, data, customHeight, customThickness) {
+        
+        setTimeout(function() {
+            _ChutyChart(id, data, customHeight, customThickness);
+        }, 0);
+        
+    }
+    
+	function _ChutyChart(id, data, customHeight, customThickness) {
+        
 		var container = document.getElementById(id);
         var canvas = document.createElement('canvas');
         
@@ -67,6 +75,7 @@
         _flip(context);
         
         container.scrollLeft = container.scrollWidth;
+        
 	}
     
 	function _drawCandleStickBody(context, datum, x, thickness, min, max, height) {

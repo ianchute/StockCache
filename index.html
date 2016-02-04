@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Stock Cache</title>
     <script src="stockdata.js"></script>
     <script src="chutychart.js"></script>
     <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
@@ -8,6 +9,18 @@
     <style>
         canvas {
             -webkit-filter: brightness(150%); 
+        }
+        ::-webkit-input-placeholder { /* WebKit browsers */
+            text-transform: none;
+        }
+        :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+            text-transform: none;
+        }
+        ::-moz-placeholder { /* Mozilla Firefox 19+ */
+            text-transform: none;
+        }
+        :-ms-input-placeholder { /* Internet Explorer 10+ */
+            text-transform: none;
         }
     </style>
 </head>
@@ -22,7 +35,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-12 col-md-2">
-				<input class="form-control" type="text" id="txtTicker" placeholder="ticker (e.g. TEL)"></input>
+				<input class="form-control" type="text" id="txtTicker" placeholder="ticker (e.g. TEL)" style="text-transform:uppercase"></input>
 			</div>
 			<div class="col-xs-12 col-md-5">
 				<input class="form-control" type="text" id="txtQuery" placeholder="query (e.g. @open>2.05,@close<1.98)"></input>
@@ -59,16 +72,20 @@
             var button = this;
 			document.getElementById('loading').style.display = 'block';
 			document.getElementById('dataCanvas').style.display = 'none';
+            document.getElementById('content').style.display = 'none';
             button.setAttribute('disabled', 'true');
+            button.innerHTML = 'Loading...';
 			
 			var ticker = document.getElementById('txtTicker').value;
 			var query = document.getElementById('txtQuery').value;
 			StockDataTable( 'content', ticker, query ? query : false, function(data) {
 				document.getElementById('loading').style.display = 'none';
 				document.getElementById('dataCanvas').style.display = 'block';
+                document.getElementById('content').style.display = 'table';
 				document.getElementById('dataCanvas').width = document.getElementById('content').offsetWidth;
 				ChutyChart('dataCanvas', data);
                 button.removeAttribute('disabled');
+                button.innerHTML = 'Get Stock Data';
 			});
 	
 		}, false);
