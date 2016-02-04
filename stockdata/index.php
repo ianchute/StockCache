@@ -31,9 +31,21 @@
 		return $dt;
 	}
 
+$ip = '';
+
+if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+    $ip = $_SERVER['HTTP_CLIENT_IP'];
+} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+} else {
+    $ip = $_SERVER['REMOTE_ADDR'];
+}
+
 	$curl = curl_init();
 	
 	$symbol = sanitize( $_GET['s'] );
+
+        file_put_contents('log.txt', date("Y-m-d H:i:s") . ' ' . $ip . ' s: ' . $_GET['s'] . "\r\n", FILE_APPEND);
 	
 	if( strpos($symbol, '-') !== false ) {
 		echo json_encode( [ 'error' => 'Invalid parameter.' ] );
@@ -43,7 +55,7 @@
 	$resolution = 'D';
 	$fromDate = '725068800'; // PSE Epoch.
 	$toDate = (string) time();
-	$session = 'pjdnrg2unaf5k1wnjg3yen4j';
+	$session = 's11dckge2czjz2ow3lsagjy4';
 	
 	$header[] = "Host: www.investagrams.com";
 	$header[] = "Connection: keep-alive";
@@ -116,6 +128,8 @@
 	
 	if( isset( $_GET['q'] ) ) {
 		
+                file_put_contents('log.txt', date("Y-m-d H:i:s") . ' ' . $ip . ' q: ' . $_GET['q'] . "\r\n", FILE_APPEND);
+
 		$query = $_GET['q'];
 		$query = str_replace('(', 'new DateTime(\'', $query);
 		$query = str_replace(')', '\')', $query);
@@ -127,10 +141,13 @@
 		
 		$parsedResult = from('$p')->in($parsedResult)
 			->where('$p => ' . $query)
-			->orderByDescending('$p => $p->date')
-			->select('$p');
+                        ->select('$p');
 	}
 	
+$parsedResult = from('$p')->in($parsedResult)
+                        ->orderByDescending('$p => $p->date')
+			->select('$p');
+
 	echo json_encode( $parsedResult );
 
 ?>

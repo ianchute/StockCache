@@ -1,6 +1,6 @@
 /*
- *	ChutyChart
- *	A stock data graphing and analysis library.
+ *  ChutyChart
+ *  A stock data graphing and analysis library.
  *  By: Ian Herve U. Chu Te
  */
 
@@ -19,13 +19,25 @@
 		
 	};
 	
-	function ChutyChart(id, data) {
+	function ChutyChart(id, data, customHeight, customThickness) {
 		
-		var canvas = document.getElementById(id);
+		var container = document.getElementById(id);
+        var canvas = document.createElement('canvas');
+        
+        container.innerHTML = '';
+        container.style.overflowX = 'scroll';
+        
 		var context = canvas.getContext('2d');
-		var height = context.canvas.clientHeight;
-		var width = context.canvas.clientWidth;
-		var thickness = width / data.length;
+        
+        var thickness = customThickness || 10;
+		var height = container.height =  canvas.height = context.canvas.clientHeight = customHeight || 400;
+        
+        data = Enumerable.From(data)
+            .OrderBy(function (datum) { return datum.date; })
+            .TakeFromLast(2600) // Until 10 years worth of data only.
+            .ToArray();
+            
+        var width = canvas.width = context.canvas.clientWidth = data.length * thickness;
 		
 		var open = _getStatistics( data, MAP.open ),
 			high = _getStatistics( data, MAP.high ),
@@ -42,17 +54,20 @@
 		context.fillRect(0, 0, width, height);
 		
 		data.forEach(function (datum) {
-			
-			_drawCandleStickBody(context, datum, xPos, thickness, min, max, height);
+
 			_drawCandleStickWick(context, datum, xPos, thickness, min, max, height);
+			_drawCandleStickBody(context, datum, xPos, thickness, min, max, height);
 			xPos += thickness;
 			
 		});
 		
-		_flip(context);
-	
+        container.appendChild(canvas);
+        
+        _flip(context);
+        
+        container.scrollLeft = container.scrollWidth;
 	}
-	
+    
 	function _drawCandleStickBody(context, datum, x, thickness, min, max, height) {
 		
 		var isGreen = datum.close > datum.open;
@@ -78,7 +93,7 @@
 		var top = _normalize(datum.high, min, max, height);
 		var height1 = (isGreen ? _normalize(datum.close, min, max, height) : _normalize(datum.open, min, max, height)) - top;
 		
-		context.fillStyle = 'white';
+		context.fillStyle = '#ffffff';
 		context.fillRect(
 			x + thickness / 2 - 0.5,
 			top,
@@ -126,9 +141,8 @@
 		context.scale(1, -1);
 		context.drawImage(img, 0, -height);
 		context.restore();
-		
 	}
 	
-	window.ChutyChart = window.ChutyChart || ChutyChart || {};
+	window.ChutyChart = window.ChutyChart || ChutyChart || function() { console.log('ChutyChart library has encountered a problem!') };
 	
 })();
