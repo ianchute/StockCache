@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="linq.min.js"></script>
     <script src="stockdata.js"></script>
     <script src="chutychart.js"></script>
     <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        canvas {
+            -webkit-filter: brightness(150%); 
+        }
+    </style>
 </head>
 <body>
 	<nav class="navbar navbar-default">
@@ -52,8 +56,10 @@
 	<script>
 		document.getElementById('btnGet').addEventListener('click', function() {
 	
+            var button = this;
 			document.getElementById('loading').style.display = 'block';
 			document.getElementById('dataCanvas').style.display = 'none';
+            button.setAttribute('disabled', 'true');
 			
 			var ticker = document.getElementById('txtTicker').value;
 			var query = document.getElementById('txtQuery').value;
@@ -62,6 +68,7 @@
 				document.getElementById('dataCanvas').style.display = 'block';
 				document.getElementById('dataCanvas').width = document.getElementById('content').offsetWidth;
 				ChutyChart('dataCanvas', data);
+                button.removeAttribute('disabled');
 			});
 	
 		}, false);
