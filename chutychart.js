@@ -23,6 +23,7 @@
         
         container.innerHTML = '';
         container.style.overflowX = 'scroll';
+        canvas.style.cursor = 'none';
         
 		var context = canvas.getContext('2d');
         
@@ -55,8 +56,9 @@
 			xPos += thickness;
 			
 		});
-		
+        
         container.appendChild(canvas);
+        _enableTooltip(canvas, container, thickness, data);
         
         container.scrollLeft = container.scrollWidth;
         
@@ -165,6 +167,126 @@
 		return height - ((quantity - min) / (max - min) * height);
 		
 	}
+    
+    function _enableTooltip(canvas, container, thickness, data) {
+        
+        var tooltip = _generateTooltipTemplate();
+        
+        container.appendChild(tooltip);
+        
+        var offsetLeft = container.parentNode.offsetLeft,
+            offsetTop = container.parentNode.offsetTop,
+            halfWidth = container.offsetWidth / 2 + offsetLeft,
+            halfHeight = container.offsetHeight / 2; // + offsetTop; // QUIRK: I don't know why it works when offsetTop is excluded.
+        
+        var lastHash = 0;
+        
+        canvas.addEventListener('mousemove', function(e){
+            
+            var index = Math.round(e.layerX / thickness) - 1;
+            
+            if (index >= data.length || index === -1) 
+                return false;
+            
+            var datum = data[index];
+            
+            var x = (e.pageX - offsetLeft),
+                y = (e.pageY - offsetTop);
+                
+            setTimeout(function() {
+                tooltip.style.left = ((x < halfWidth) ? x : (x - tooltip.offsetWidth)) + 'px';
+                tooltip.style.top = ((y < halfHeight) ? y : (y - tooltip.offsetHeight)) + 'px';
+            }, 0);
+            
+            if (datum.d === lastHash)
+                return false;
+            
+            setTimeout(function() {
+                valueClose.innerHTML = datum.c,
+                valueOpen.innerHTML = datum.o,
+                valueHigh.innerHTML = datum.h,
+                valueLow.innerHTML = datum.l,
+                valueDate.innerHTML = new Date(datum.d * 1000).toLocaleDateString(),
+                valueVolume.innerHTML = datum.v.toLocaleString(),
+                valueChange.innerHTML = Math.round((datum.c - datum.o) / datum.o * 10000) / 100 + '%',
+                valueValue.innerHTML = (Math.round((datum.c + datum.o) / 2 * datum.v)).toLocaleString();
+
+                tooltip.classList.remove('green');
+                tooltip.classList.remove('red');
+                tooltip.classList.remove('blue');
+                tooltip.className += datum.c == datum.o ? ' blue' : (datum.c > datum.o ? ' green' : ' red');
+            }, 0);
+            
+            lastHash = datum.d;
+        });
+        
+    }
+    
+    var valueClose,
+        valueOpen,
+        valueHigh,
+        valueLow,
+        valueDate,
+        valueVolume,
+        valueChange,
+        valueValue;
+    
+    function _generateTooltipTemplate() {
+        
+        var tooltip = document.createElement('table'),
+            tbody = document.createElement('tbody'),
+            close = document.createElement('tr'),
+            open = document.createElement('tr'),
+            high = document.createElement('tr'),
+            low = document.createElement('tr'),
+            date = document.createElement('tr'),
+            volume = document.createElement('tr'),
+            change = document.createElement('tr'),
+            value = document.createElement('tr');
+           
+        var labelClose = close.appendChild(document.createElement('td'));
+        var labelOpen = open.appendChild(document.createElement('td'));
+        var labelHigh = high.appendChild(document.createElement('td'));
+        var labelLow = low.appendChild(document.createElement('td'));
+        var labelDate = date.appendChild(document.createElement('td'));
+        var labelVolume = volume.appendChild(document.createElement('td'));
+        var labelChange = change.appendChild(document.createElement('td'));
+        var labelValue =  value.appendChild(document.createElement('td'));
+        
+        labelClose.innerHTML = '<b>Close</b>';
+        labelOpen.innerHTML = '<b>Open</b>';
+        labelHigh.innerHTML = '<b>High</b>';
+        labelLow.innerHTML = '<b>Low</b>';
+        labelDate.innerHTML = '<b>Date</b>';
+        labelVolume.innerHTML = '<b>Volume</b>';
+        labelChange.innerHTML = '<b>Change</b>';
+        labelValue.innerHTML = '<b>Value</b>';
+
+        valueClose = close.appendChild(document.createElement('td'));
+        valueOpen = open.appendChild(document.createElement('td'));
+        valueHigh = high.appendChild(document.createElement('td'));
+        valueLow = low.appendChild(document.createElement('td'));
+        valueDate = date.appendChild(document.createElement('td'));
+        valueVolume = volume.appendChild(document.createElement('td'));
+        valueChange = change.appendChild(document.createElement('td'));
+        valueValue =  value.appendChild(document.createElement('td'));
+        
+        tooltip.className = 'chutyChartTooltip';
+        
+        tbody.appendChild(close);
+        tbody.appendChild(open);
+        tbody.appendChild(high);
+        tbody.appendChild(low);
+        tbody.appendChild(date);
+        tbody.appendChild(volume);
+        tbody.appendChild(change); 
+        tbody.appendChild(value);
+        tooltip.appendChild(tbody);
+        
+        tooltip.id = 'chutyChartTooltip';
+        
+        return tooltip;
+    }
 	
 	window.ChutyChart = window.ChutyChart || ChutyChart || function() { console.log('ChutyChart library has encountered a problem!') };
 	

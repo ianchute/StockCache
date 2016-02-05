@@ -24,7 +24,7 @@ function StockDataTable(id, ticker, query, callback, doWith) {
         setTimeout(function() {
         
             var contentElement = document.getElementById('content');
-            var content = '<thead id="headers" class="thead-default"><tr><th>Date</th><th>Open</th><th>High</th><th>Low</th><th>Close</th><th>% Change</th><th>Volume</th><th>Value</th></tr></thead><tbody>';
+            var content = '<thead class="thead-default"><tr><th>Date</th><th>Open</th><th>High</th><th>Low</th><th>Close</th><th>% Change</th><th>Volume</th><th>Value</th></tr></thead><tbody>';
             
             data.forEach( function( datum, index ) {
             

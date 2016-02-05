@@ -33,21 +33,19 @@
 		return $dt;
 	}
 
-$ip = '';
+    $ip = '';
 
-if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-    $ip = $_SERVER['HTTP_CLIENT_IP'];
-} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-} else {
-    $ip = $_SERVER['REMOTE_ADDR'];
-}
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        $ip = $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } else {
+        $ip = $_SERVER['REMOTE_ADDR'];
+    }
 
 	$curl = curl_init();
 	
 	$symbol = sanitize( $_GET['s'] );
-
-        file_put_contents('log.txt', date("Y-m-d H:i:s") . ' ' . $ip . ' s: ' . $_GET['s'] . "\r\n", FILE_APPEND);
 	
 	if( strpos($symbol, '-') !== false ) {
 		echo json_encode( [ 'error' => 'Invalid parameter.' ] );
@@ -119,18 +117,16 @@ if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
 	
 	for( $i = 0; $i < $count; $i++ ) {
 		$parsedResult[] = (object) array(
-			'date' => $t[$i],
-			'open' => $o[$i],
-			'high' => $h[$i],
-			'low' => $l[$i],
-			'close' => $c[$i],
-			'volume' => $v[$i]
+			'd' => $t[$i],
+			'o' => $o[$i],
+			'h' => $h[$i],
+			'l' => $l[$i],
+			'c' => $c[$i],
+			'v' => $v[$i]
 		);
 	}
 	
 	if( isset( $_GET['q'] ) ) {
-		
-                file_put_contents('log.txt', date("Y-m-d H:i:s") . ' ' . $ip . ' q: ' . $_GET['q'] . "\r\n", FILE_APPEND);
 
 		$query = $_GET['q'];
 		$query = str_replace('(', 'new DateTime(\'', $query);
