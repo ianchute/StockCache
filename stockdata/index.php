@@ -4,6 +4,8 @@
 	 *	Philippine Stock Data API 
 	 *  By: Ian Herve U. Chu Te
 	 */
+     
+    ob_start('ob_gzhandler');
 	
 	if( !@fsockopen( 'www.investagrams.com' , 80, $errno, $errstr, 2 ) ) {
 		echo json_encode( [ 'error' => 'Unable to contact source server.' ] );
