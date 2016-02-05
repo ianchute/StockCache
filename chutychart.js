@@ -23,7 +23,7 @@
         
         container.innerHTML = '';
         container.style.overflowX = 'scroll';
-        canvas.style.cursor = 'none';
+        container.style.cursor = 'none';
         
 		var context = canvas.getContext('2d');
         
@@ -58,14 +58,14 @@
 		});
         
         container.appendChild(canvas);
-        _enableTooltip(canvas, container, thickness, data);
+        _enableTooltip(canvas, container, thickness, data, context, height, min, max);
         
         container.scrollLeft = container.scrollWidth;
         
 	}
     
     var lastMonth = -1;
-	function _drawCandleStickBody(context, datum, x, thickness, min, max, height) {
+	function _drawCandleStickBody(context, datum, x, thickness, min, max, height, selected) {
 		
 		var close = datum.c,
             open = datum.o,
@@ -74,7 +74,7 @@
             date = datum.d,
             isGreen = close > open;
 		
-		context.fillStyle = isGreen ? 'green' : 'red';
+		context.fillStyle = isGreen ? (selected ? 'teal' : 'green') : (selected ? 'orange' : 'red');
 		var top = isGreen ? _normalize(close, min, max, height) : _normalize(open, min, max, height);
 		var candleHeight = (isGreen ? _normalize(open, min, max, height) : _normalize(close, min, max, height)) - top;
         ++candleHeight;
@@ -89,7 +89,8 @@
         var dateObject = new Date(date * 1000);
         var currentMonth = dateObject.getMonth();
         
-        if ( currentMonth != lastMonth ) {
+        if ( currentMonth != lastMonth 
+             && typeof selected === 'undefined' ) { // once a selected parameter is supplied, it means that this is for the select-deselect portion of the code.
             
             var currentYear = dateObject.getYear() + 1900;
             context.fillStyle = 'blue';
@@ -107,10 +108,8 @@
         lastMonth = currentMonth;
 		
 	}
-	
     
-    
-	function _drawCandleStickWick(context, datum, x, thickness, min, max, height) {
+	function _drawCandleStickWick(context, datum, x, thickness, min, max, height, selected) {
 		
         var close = datum.c,
             open = datum.o,
@@ -123,7 +122,7 @@
             height2 = _normalize(low, min, max, height) - bottom;
 		
         // Top wick.
-		context.fillStyle = '#ffffff';
+		context.fillStyle = selected ? 'yellow' : 'white';
 		context.fillRect(
 			x + thickness / 2 - 0.5,
 			top,
@@ -168,7 +167,7 @@
 		
 	}
     
-    function _enableTooltip(canvas, container, thickness, data) {
+    function _enableTooltip(canvas, container, thickness, data, context, height, min, max) {
         
         var tooltip = _generateTooltipTemplate();
         
@@ -179,8 +178,11 @@
             halfWidth = container.offsetWidth / 2 + offsetLeft,
             halfHeight = container.offsetHeight / 2; // + offsetTop; // QUIRK: I don't know why it works when offsetTop is excluded.
         
-        var lastHash = 0;
-        
+        var lastHash = 0,
+            positionThread = setTimeout(function() {}, 0),
+            valuesThread = setTimeout(function() {}, 0),
+            formerIndex = -1;
+            
         canvas.addEventListener('mousemove', function(e){
             
             var index = Math.round(e.layerX / thickness) - 1;
@@ -192,8 +194,9 @@
             
             var x = (e.pageX - offsetLeft),
                 y = (e.pageY - offsetTop);
-                
-            setTimeout(function() {
+            
+            clearTimeout(positionThread);
+            positionThread = setTimeout(function() {
                 tooltip.style.left = ((x < halfWidth) ? x : (x - tooltip.offsetWidth)) + 'px';
                 tooltip.style.top = ((y < halfHeight) ? y : (y - tooltip.offsetHeight)) + 'px';
             }, 0);
@@ -201,7 +204,8 @@
             if (datum.d === lastHash)
                 return false;
             
-            setTimeout(function() {
+            clearTimeout(valuesThread);
+            valuesThread = setTimeout(function() {
                 valueClose.innerHTML = datum.c,
                 valueOpen.innerHTML = datum.o,
                 valueHigh.innerHTML = datum.h,
@@ -215,6 +219,22 @@
                 tooltip.classList.remove('red');
                 tooltip.classList.remove('blue');
                 tooltip.className += datum.c == datum.o ? ' blue' : (datum.c > datum.o ? ' green' : ' red');
+            }, 0);
+            
+            setTimeout(function() {
+                // formerly selected candle.
+                if(formerIndex !== -1) {
+                    var candleOffsetFormer = formerIndex * thickness,
+                        formerDatum = data[formerIndex];
+                    _drawCandleStickBody(context, formerDatum, candleOffsetFormer, thickness, min, max, height, false);
+                    _drawCandleStickWick(context, formerDatum, candleOffsetFormer, thickness, min, max, height, false);
+                }
+                
+                // newly selected candle.
+                var candleOffsetNew = index * thickness;
+                _drawCandleStickBody(context, datum, candleOffsetNew, thickness, min, max, height, true);
+                _drawCandleStickWick(context, datum, candleOffsetNew, thickness, min, max, height, true);
+                formerIndex = index;
             }, 0);
             
             lastHash = datum.d;
