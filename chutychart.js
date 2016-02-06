@@ -4,7 +4,7 @@
  *  By: Ian Herve U. Chu Te
  */
 
-(function(window, document, Object, console, Math) {
+(function(window, document, Object, console, Math, setTimeout) {
 	
     const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     
@@ -19,9 +19,9 @@
 	function _ChutyChart(id, _data, customHeight, customThickness) {
         
 		var container = document.getElementById(id);
-        var canvas = document.createElement('canvas');
+        var canvas = _generateElement('canvas');
         
-        container.innerHTML = '';
+        _html(container, '');
         container.style.overflowX = 'scroll';
         canvas.style.cursor = 'none';
         
@@ -94,7 +94,7 @@
              && typeof selected === 'undefined' ) { // once a selected parameter is supplied, it means that this is for the select-deselect portion of the code.
             
             var currentYear = dateObject.getYear() + 1900;
-            context.fillStyle = 'blue';
+            context.fillStyle = 'white';
             context.fillRect(
                 x,
                 0,
@@ -102,7 +102,7 @@
                 height
             );
             
-            context.font = 'Lato';
+            context.font = 'Consolas';
             context.fillText(MONTHS[currentMonth] + ' ' + currentYear, x + 10, 10);
         }
         
@@ -169,10 +169,10 @@
 	}
     
     function _pushDerivedFields(datum) {
-        datum.dateString = new Date(datum.d * 1000).toLocaleDateString(),
-        datum.volumeString = datum.v.toLocaleString(),
-        datum.changeString = Math.round((datum.c - datum.o) / datum.o * 10000) / 100 + '%',
-        datum.valueString = (Math.round((datum.c + datum.o) / 2 * datum.v)).toLocaleString();
+        datum.ds = new Date(datum.d * 1000).toLocaleDateString(),
+        datum.vos = datum.v.toLocaleString(),
+        datum.cs = Math.round((datum.c - datum.o) / datum.o * 10000) / 100 + '%',
+        datum.vas = (Math.round((datum.c + datum.o) / 2 * datum.v)).toLocaleString();
     }
     
     function _enableTooltip(canvas, container, thickness, data, context, height, min, max) {
@@ -211,14 +211,14 @@
                 return false;
             
             setTimeout(function() {
-                valueClose.innerHTML = datum.c,
-                valueOpen.innerHTML = datum.o,
-                valueHigh.innerHTML = datum.h,
-                valueLow.innerHTML = datum.l,
-                valueDate.innerHTML = datum.dateString,
-                valueVolume.innerHTML = datum.volumeString,
-                valueChange.innerHTML = datum.changeString,
-                valueValue.innerHTML = datum.valueString;
+                _html(valueClose, datum.c);
+                _html(valueOpen, datum.o);
+                _html(valueHigh, datum.h);
+                _html(valueLow, datum.l);
+                _html(valueDate, datum.ds);
+                _html(valueVolume, datum.vos);
+                _html(valueChange, datum.cs);
+                _html(valueValue, datum.vas);
 
                 var name = datum.c === datum.o ? 'blue' : (datum.c > datum.o ? 'green' : 'red');
                 tooltip.setAttribute('name', name);
@@ -253,58 +253,70 @@
         valueVolume,
         valueChange,
         valueValue;
+        
+    function _generateElement(element) {
+        return document.createElement(element);
+    }
+    
+    function _appendChild(parent, child) {
+        return parent.appendChild(child);
+    }
+    
+    function _html(element, value) {
+        element.innerHTML = value;
+    }
     
     function _generateTooltipTemplate() {
         
-        var tooltip = document.createElement('table'),
-            tbody = document.createElement('tbody'),
-            close = document.createElement('tr'),
-            open = document.createElement('tr'),
-            high = document.createElement('tr'),
-            low = document.createElement('tr'),
-            date = document.createElement('tr'),
-            volume = document.createElement('tr'),
-            change = document.createElement('tr'),
-            value = document.createElement('tr');
+        var tooltip = _generateElement('table'),
+            tbody = _generateElement('tbody'),
+            close = _generateElement('tr'),
+            open = _generateElement('tr'),
+            high = _generateElement('tr'),
+            low = _generateElement('tr'),
+            date = _generateElement('tr'),
+            volume = _generateElement('tr'),
+            change = _generateElement('tr'),
+            value = _generateElement('tr');
            
-        var labelClose = close.appendChild(document.createElement('td'));
-        var labelOpen = open.appendChild(document.createElement('td'));
-        var labelHigh = high.appendChild(document.createElement('td'));
-        var labelLow = low.appendChild(document.createElement('td'));
-        var labelDate = date.appendChild(document.createElement('td'));
-        var labelVolume = volume.appendChild(document.createElement('td'));
-        var labelChange = change.appendChild(document.createElement('td'));
-        var labelValue =  value.appendChild(document.createElement('td'));
+        var labelClose = _appendChild(close, _generateElement('td'));
+        var labelOpen = _appendChild(open, _generateElement('td'));
+        var labelHigh = _appendChild(high, _generateElement('td'));
+        var labelLow = _appendChild(low, _generateElement('td'));
+        var labelDate = _appendChild(date, _generateElement('td'));
+        var labelVolume = _appendChild(volume, _generateElement('td'));
+        var labelChange = _appendChild(change, _generateElement('td'));
+        var labelValue =  _appendChild(value, _generateElement('td'));
         
-        labelClose.innerHTML = '<b>Close</b>';
-        labelOpen.innerHTML = '<b>Open</b>';
-        labelHigh.innerHTML = '<b>High</b>';
-        labelLow.innerHTML = '<b>Low</b>';
-        labelDate.innerHTML = '<b>Date</b>';
-        labelVolume.innerHTML = '<b>Volume</b>';
-        labelChange.innerHTML = '<b>Change</b>';
-        labelValue.innerHTML = '<b>Value</b>';
+        _html(labelClose, 'Close');
+        _html(labelOpen, 'Open');
+        _html(labelHigh, 'High');
+        _html(labelLow, 'Low');
+        _html(labelDate, 'Date');
+        _html(labelVolume, 'Volume');
+        _html(labelChange, 'Change');
+        _html(labelValue, 'Value');
 
-        valueClose = close.appendChild(document.createElement('td'));
-        valueOpen = open.appendChild(document.createElement('td'));
-        valueHigh = high.appendChild(document.createElement('td'));
-        valueLow = low.appendChild(document.createElement('td'));
-        valueDate = date.appendChild(document.createElement('td'));
-        valueVolume = volume.appendChild(document.createElement('td'));
-        valueChange = change.appendChild(document.createElement('td'));
-        valueValue =  value.appendChild(document.createElement('td'));
+        valueClose = _appendChild(close, _generateElement('td'));
+        valueOpen = _appendChild(open, _generateElement('td'));
+        valueHigh = _appendChild(high, _generateElement('td'));
+        valueLow = _appendChild(low, _generateElement('td'));
+        valueDate = _appendChild(date, _generateElement('td'));
+        valueVolume = _appendChild(volume, _generateElement('td'));
+        valueChange = _appendChild(change, _generateElement('td'));
+        valueValue =  _appendChild(value, _generateElement('td'));
         
         tooltip.className = 'chutyChartTooltip';
         
-        tbody.appendChild(close);
-        tbody.appendChild(open);
-        tbody.appendChild(high);
-        tbody.appendChild(low);
-        tbody.appendChild(date);
-        tbody.appendChild(volume);
-        tbody.appendChild(change); 
-        tbody.appendChild(value);
-        tooltip.appendChild(tbody);
+        _appendChild(tbody, close);
+        _appendChild(tbody, open);
+        _appendChild(tbody, high);
+        _appendChild(tbody, low);
+        _appendChild(tbody, date);
+        _appendChild(tbody, volume);
+        _appendChild(tbody, change); 
+        _appendChild(tbody, value);
+        _appendChild(tooltip, tbody);
         
         tooltip.id = 'chutyChartTooltip';
         
@@ -315,4 +327,4 @@
 	
 	window.ChutyChart = window.ChutyChart || ChutyChart || function() { console.log('ChutyChart library has encountered a problem!') };
 	
-})(window, document, Object, console, Math);
+})(window, document, Object, console, Math, setTimeout);

@@ -24,17 +24,16 @@
         }
         .chutyChartTooltip {
             position: absolute;
-            opacity: 0.4;
             font-size: xx-small;
         }
-        .chutyChartTooltip[name=green] {
-            background-color: green;
-        }
         .chutyChartTooltip[name=red] {
-            background-color: red;
+            background-color: rgba(256, 0, 0, 0.5);
         }
         .chutyChartTooltip[name=blue] {
-            background-color: blue;
+            background-color: rgba(0, 0, 256, 0.5);
+        }
+        .chutyChartTooltip[name=green] {
+            background-color: rgba(0, 256, 0, 0.5);
         }
         .chutyChartTooltip tr {
             border-bottom: 1px solid white;
@@ -43,10 +42,12 @@
             border-bottom: none;
         }
         .chutyChartTooltip td {
-            -webkit-filter: brightness(200%); 
-            color: #F3F315;
+            color: white;
             position: relative;
             padding: 2px;
+        }
+        .chutyChartTooltip td:first-child {
+            font-weight: bold;
         }
         .chutyChartTooltip td:last-child {
             text-align: right;
