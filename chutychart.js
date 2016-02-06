@@ -23,7 +23,7 @@
         
         container.innerHTML = '';
         container.style.overflowX = 'scroll';
-        container.style.cursor = 'none';
+        canvas.style.cursor = 'none';
         
 		var context = canvas.getContext('2d');
         
@@ -307,6 +307,8 @@
         tooltip.appendChild(tbody);
         
         tooltip.id = 'chutyChartTooltip';
+        
+        tooltip.style.cursor = 'none';
         
         return tooltip;
     }
