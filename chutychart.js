@@ -51,6 +51,7 @@
 		
 		data.forEach(function (datum) {
 
+            _pushDerivedFields(datum);
 			_drawCandleStickWick(context, datum, xPos, thickness, min, max, height);
 			_drawCandleStickBody(context, datum, xPos, thickness, min, max, height);
 			xPos += thickness;
@@ -167,6 +168,13 @@
 		
 	}
     
+    function _pushDerivedFields(datum) {
+        datum.dateString = new Date(datum.d * 1000).toLocaleDateString(),
+        datum.volumeString = datum.v.toLocaleString(),
+        datum.changeString = Math.round((datum.c - datum.o) / datum.o * 10000) / 100 + '%',
+        datum.valueString = (Math.round((datum.c + datum.o) / 2 * datum.v)).toLocaleString();
+    }
+    
     function _enableTooltip(canvas, container, thickness, data, context, height, min, max) {
         
         var tooltip = _generateTooltipTemplate();
@@ -179,15 +187,14 @@
             halfHeight = container.offsetHeight / 2; // + offsetTop; // QUIRK: I don't know why it works when offsetTop is excluded.
         
         var lastHash = 0,
-            positionThread = setTimeout(function() {}, 0),
-            valuesThread = setTimeout(function() {}, 0),
-            formerIndex = -1;
+            formerIndex = -1,
+            total = data.length;
             
         canvas.addEventListener('mousemove', function(e){
             
             var index = Math.round(e.layerX / thickness) - 1;
             
-            if (index >= data.length || index === -1) 
+            if (index >= total || index === -1) 
                 return false;
             
             var datum = data[index];
@@ -195,8 +202,7 @@
             var x = (e.pageX - offsetLeft),
                 y = (e.pageY - offsetTop);
             
-            clearTimeout(positionThread);
-            positionThread = setTimeout(function() {
+            setTimeout(function() {
                 tooltip.style.left = ((x < halfWidth) ? x : (x - tooltip.offsetWidth)) + 'px';
                 tooltip.style.top = ((y < halfHeight) ? y : (y - tooltip.offsetHeight)) + 'px';
             }, 0);
@@ -204,21 +210,18 @@
             if (datum.d === lastHash)
                 return false;
             
-            clearTimeout(valuesThread);
-            valuesThread = setTimeout(function() {
+            setTimeout(function() {
                 valueClose.innerHTML = datum.c,
                 valueOpen.innerHTML = datum.o,
                 valueHigh.innerHTML = datum.h,
                 valueLow.innerHTML = datum.l,
-                valueDate.innerHTML = new Date(datum.d * 1000).toLocaleDateString(),
-                valueVolume.innerHTML = datum.v.toLocaleString(),
-                valueChange.innerHTML = Math.round((datum.c - datum.o) / datum.o * 10000) / 100 + '%',
-                valueValue.innerHTML = (Math.round((datum.c + datum.o) / 2 * datum.v)).toLocaleString();
+                valueDate.innerHTML = datum.dateString,
+                valueVolume.innerHTML = datum.volumeString,
+                valueChange.innerHTML = datum.changeString,
+                valueValue.innerHTML = datum.valueString;
 
-                tooltip.classList.remove('green');
-                tooltip.classList.remove('red');
-                tooltip.classList.remove('blue');
-                tooltip.className += datum.c == datum.o ? ' blue' : (datum.c > datum.o ? ' green' : ' red');
+                var name = datum.c === datum.o ? 'blue' : (datum.c > datum.o ? 'green' : 'red');
+                tooltip.setAttribute('name', name);
             }, 0);
             
             setTimeout(function() {
