@@ -113,31 +113,17 @@
     
 	function _drawCandleStickWick(context, datum, x, thickness, min, max, height, selected) {
 		
-        var close = datum.c,
-            open = datum.o,
-            high = datum.h,
+        var high = datum.h,
             low = datum.l,
-            isGreen = close > open,
             top = _normalize(high, min, max, height),
-            height1 = (isGreen ? _normalize(close, min, max, height) : _normalize(open, min, max, height)) - top,
-            bottom = _normalize(isGreen ? open : close, min, max, height),
-            height2 = _normalize(low, min, max, height) - bottom;
+            height = _normalize(low, min, max, height) - top;
 		
-        // Top wick.
 		context.fillStyle = selected ? 'yellow' : 'white';
 		context.fillRect(
 			x + thickness / 2 - 0.5,
 			top,
 			1,
-			height1
-		);
-		
-		// Bottom wick.
-		context.fillRect(
-			x + thickness / 2 - 0.5,
-			bottom,
-			1,
-			height2
+			height
 		);
 	}
 	
@@ -230,14 +216,14 @@
                 if(formerIndex !== -1) {
                     var candleOffsetFormer = formerIndex * thickness,
                         formerDatum = data[formerIndex];
-                    _drawCandleStickBody(context, formerDatum, candleOffsetFormer, thickness, min, max, height, false);
                     _drawCandleStickWick(context, formerDatum, candleOffsetFormer, thickness, min, max, height, false);
+                    _drawCandleStickBody(context, formerDatum, candleOffsetFormer, thickness, min, max, height, false);
                 }
                 
                 // newly selected candle.
                 var candleOffsetNew = index * thickness;
-                _drawCandleStickBody(context, datum, candleOffsetNew, thickness, min, max, height, true);
                 _drawCandleStickWick(context, datum, candleOffsetNew, thickness, min, max, height, true);
+                _drawCandleStickBody(context, datum, candleOffsetNew, thickness, min, max, height, true);
                 formerIndex = index;
             });
             
