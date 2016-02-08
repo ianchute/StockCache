@@ -28,7 +28,8 @@
 		var context = canvas.getContext('2d');
         
         var thickness = customThickness || 10;
-		var height = container.height =  canvas.height = context.canvas.clientHeight = customHeight || 400;
+		var height = container.height =  canvas.height = context.canvas.clientHeight = customHeight || 400; // fullHeight
+        
         data = _data.slice(0, 2600);
         data.reverse();
         
@@ -39,7 +40,7 @@
 			high = _getStatistics( data, 'h' ),
 			low = _getStatistics( data, 'l' ),
 			// close = _getStatistics( data, 'close' ),
-			// volume = _getStatistics( data, 'volume' ),
+			volume = _getStatistics( data, 'v' ),
 			min = low.min,
 			max = high.max;
 		
@@ -48,31 +49,38 @@
 		context.clearRect(0, 0, width, height);
 		context.fillStyle = 'black';
 		context.fillRect(0, 0, width, height);
+        context.fillRect(0, 0, width, height);
 		
+        var candleStickAreaHeight = 4 * height / 5,
+            volumeAreaHeight = height / 5;
+         // volume-price separator.
+        context.fillStyle = 'white';
+        context.fillRect(0, candleStickAreaHeight, width, 1);
+        
 		data.forEach(function (datum) {
 
             _pushDerivedFields(datum);
-			_drawCandleStickWick(context, datum, xPos, thickness, min, max, height);
-			_drawCandleStickBody(context, datum, xPos, thickness, min, max, height);
+			_drawCandleStickWick(context, datum, xPos, thickness, min, max, candleStickAreaHeight);
+			_drawCandleStickBody(context, datum, xPos, thickness, min, max, candleStickAreaHeight);
+            _drawVolume(context, datum, xPos, thickness, volume.min, volume.max, volumeAreaHeight, candleStickAreaHeight);
+            _drawMonthSeparatorLine(context, datum.d, xPos, height);
 			xPos += thickness;
 			
 		});
         
         container.appendChild(canvas);
-        _enableTooltip(canvas, container, thickness, data, context, height, min, max);
+        _enableTooltip(canvas, container, thickness, data, context, candleStickAreaHeight, min, max, volume.min, volume.max, volumeAreaHeight);
         
         container.scrollLeft = container.scrollWidth;
         
 	}
     
-    var lastMonth = -1;
 	function _drawCandleStickBody(context, datum, x, thickness, min, max, height, selected) {
 		
 		var close = datum.c,
             open = datum.o,
             high = datum.h,
             low = datum.l,
-            date = datum.d,
             color = datum.c === datum.o ? 'gray' : (datum.c > datum.o ? 'green' : 'red'),
             isGreen = color === 'green';
 		
@@ -87,7 +95,48 @@
 			thickness,
 			candleHeight
 		);
-        
+		
+	}
+    
+	function _drawCandleStickWick(context, datum, x, thickness, min, max, height, selected) {
+		
+        var high = datum.h,
+            low = datum.l,
+            top = _normalize(high, min, max, height),
+            _height = _normalize(low, min, max, height) - top;
+		
+		context.fillStyle = selected ? 'yellow' : 'white';
+		context.fillRect(
+			x + thickness / 2 - 0.5,
+			top,
+			1,
+			_height
+		);
+	}
+    
+    function _drawVolume(context, datum, x, thickness, min, max, height, yOffset, selected) {
+		
+		var volume = datum.v,
+            color = datum.c === datum.o ? 'gray' : (datum.c > datum.o ? 'green' : 'red'),
+            isGreen = color === 'green';
+		
+		context.fillStyle = selected ? 'yellow' : color;
+		var top = _normalize(volume, min, max, height);
+		var _height = height - top;
+        ++_height;
+		
+		context.fillRect(
+			x,
+			top + yOffset,
+			thickness,
+			_height
+		);
+		
+	}
+    
+    var lastMonth = -1;
+    function _drawMonthSeparatorLine(context, date, x, height) {
+    
         var dateObject = new Date(date * 1000);
         var currentMonth = dateObject.getMonth();
         
@@ -108,24 +157,7 @@
         }
         
         lastMonth = currentMonth;
-		
-	}
-    
-	function _drawCandleStickWick(context, datum, x, thickness, min, max, height, selected) {
-		
-        var high = datum.h,
-            low = datum.l,
-            top = _normalize(high, min, max, height),
-            height = _normalize(low, min, max, height) - top;
-		
-		context.fillStyle = selected ? 'yellow' : 'white';
-		context.fillRect(
-			x + thickness / 2 - 0.5,
-			top,
-			1,
-			height
-		);
-	}
+    }
 	
 	function _getStatistics(data, map) {
 		
@@ -162,7 +194,7 @@
         datum.vas = (Math.round((datum.c + datum.o) / 2 * datum.v)).toLocaleString();
     }
     
-    function _enableTooltip(canvas, container, thickness, data, context, height, min, max) {
+    function _enableTooltip(canvas, container, thickness, data, context, height, min, max, vmin, vmax, volumeHeight) {
         
         var tooltip = _generateTooltipTemplate();
         
@@ -218,12 +250,14 @@
                         formerDatum = data[formerIndex];
                     _drawCandleStickWick(context, formerDatum, candleOffsetFormer, thickness, min, max, height, false);
                     _drawCandleStickBody(context, formerDatum, candleOffsetFormer, thickness, min, max, height, false);
+                    _drawVolume(context, formerDatum, candleOffsetFormer, thickness, vmin, vmax, volumeHeight, height, false);
                 }
                 
                 // newly selected candle.
                 var candleOffsetNew = index * thickness;
                 _drawCandleStickWick(context, datum, candleOffsetNew, thickness, min, max, height, true);
                 _drawCandleStickBody(context, datum, candleOffsetNew, thickness, min, max, height, true);
+                _drawVolume(context, datum, candleOffsetNew, thickness, vmin, vmax, volumeHeight, height, true);
                 formerIndex = index;
             });
             
