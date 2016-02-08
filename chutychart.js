@@ -4,9 +4,15 @@
  *  By: Ian Herve U. Chu Te
  */
 
-(function(window, document, Object, console, Math, animate) {
+(function(window, document, Object, console, Math, animate, CanvasRenderingContext2D, round) {
 	
     const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    
+    // Override original fillRect with no sub-pixel fillRect.
+    CanvasRenderingContext2D.prototype._fillRect = CanvasRenderingContext2D.prototype.fillRect;
+    CanvasRenderingContext2D.prototype.fillRect = function(a, b, c, d) {
+        return this._fillRect(round(a), round(b), round(c), round(d));
+    };
     
     function ChutyChart(id, data, customHeight, customThickness) {
         
@@ -53,7 +59,7 @@
 		
         var candleStickAreaHeight = 4 * height / 5,
             volumeAreaHeight = height / 5;
-         // volume-price separator.
+        // volume-price separator.
         context.fillStyle = 'white';
         context.fillRect(0, candleStickAreaHeight, width, 1);
         
@@ -107,9 +113,9 @@
 		
 		context.fillStyle = selected ? 'yellow' : 'white';
 		context.fillRect(
-			x + thickness / 2 - 0.5,
+			x + thickness / 2 - 1,
 			top,
-			1,
+			2,
 			_height
 		);
 	}
@@ -348,4 +354,4 @@
 	
 	window.ChutyChart = window.ChutyChart || ChutyChart || function() { console.log('ChutyChart library has encountered a problem!') };
 	
-})(window, document, Object, console, Math, window.requestAnimationFrame || function(f) { window.setTimeout(f, 0); } );
+})(window, document, Object, console, Math, window.requestAnimationFrame || function(f) { window.setTimeout(f, 0); }, CanvasRenderingContext2D, function (n) { return (n + 0.5) | 0; } );
