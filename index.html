@@ -109,20 +109,23 @@
 	<script>
 		document.getElementById('btnGet').addEventListener('click', function() {
 	
-            var button = this;
-			document.getElementById('loading').style.display = 'block';
-			document.getElementById('dataCanvas').style.display = 'none';
-            document.getElementById('content').style.display = 'none';
+            var button = this,
+                loading = document.getElementById('loading'),
+                dataCanvas = document.getElementById('dataCanvas'),
+                content = document.getElementById('content');
+            loading.style.display = 'block';
+            dataCanvas.style.display = 'none';
+            content.style.display = 'none';
             button.setAttribute('disabled', 'true');
             button.innerHTML = 'Loading...';
 			
 			var ticker = document.getElementById('txtTicker').value;
 			var query = document.getElementById('txtQuery').value;
 			StockDataTable( 'content', ticker, query ? query : false, function(data) {
-				document.getElementById('loading').style.display = 'none';
-				document.getElementById('dataCanvas').style.display = 'block';
-                document.getElementById('content').style.display = 'table';
-				document.getElementById('dataCanvas').width = document.getElementById('content').offsetWidth;
+				loading.style.display = 'none';
+				dataCanvas.style.display = 'block';
+                content.style.display = 'table';
+				dataCanvas.width = content.offsetWidth;
 				ChutyChart('dataCanvas', data);
                 button.removeAttribute('disabled');
                 button.innerHTML = 'Get Stock Data';
