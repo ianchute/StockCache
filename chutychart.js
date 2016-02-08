@@ -73,9 +73,10 @@
             high = datum.h,
             low = datum.l,
             date = datum.d,
-            isGreen = close > open;
+            color = datum.c === datum.o ? 'gray' : (datum.c > datum.o ? 'green' : 'red'),
+            isGreen = color === 'green';
 		
-		context.fillStyle = isGreen ? (selected ? 'teal' : 'green') : (selected ? 'orange' : 'red');
+		context.fillStyle = selected ? 'yellow' : color;
 		var top = isGreen ? _normalize(close, min, max, height) : _normalize(open, min, max, height);
 		var candleHeight = (isGreen ? _normalize(open, min, max, height) : _normalize(close, min, max, height)) - top;
         ++candleHeight;
@@ -220,8 +221,8 @@
                 _html(valueChange, datum.cs);
                 _html(valueValue, datum.vas);
 
-                var name = datum.c === datum.o ? 'blue' : (datum.c > datum.o ? 'green' : 'red');
-                tooltip.setAttribute('name', name);
+                var color = datum.c === datum.o ? 'gray' : (datum.c > datum.o ? 'green' : 'red');
+                tooltip.setAttribute('name', color);
             });
             
             animate(function() {

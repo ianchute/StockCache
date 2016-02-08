@@ -33,13 +33,15 @@ function StockDataTable(id, ticker, query, callback, doWith) {
                     high = datum.h,
                     low = datum.l,
                     date = datum.d,
-                    volume = datum.v;
+                    volume = datum.v,
+                    color = datum.c === datum.o ? 'gray' : 
+                    (datum.c > datum.o ? 'green' : 'red');
             
                 var change =  Math.round((close - open) / open * 10000) / 100 ;
                 var value = Math.round((close + open) / 2 * volume);
                 
                 content += 
-                    '<tr>'
+                    '<tr name=' + color + '>'
                         + '<td>' + new Date(date * 1000).toLocaleDateString() + '</td>'
                         + '<td>' + open + '</td>'
                         + '<td>' + high + '</td>'
