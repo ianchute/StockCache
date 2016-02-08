@@ -4,15 +4,15 @@
  *  By: Ian Herve U. Chu Te
  */
 
-(function(window, document, Object, console, Math, setTimeout) {
+(function(window, document, Object, console, Math, animate) {
 	
     const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     
     function ChutyChart(id, data, customHeight, customThickness) {
         
-        setTimeout(function() {
+        animate(function() {
             _ChutyChart(id, data, customHeight, customThickness);
-        }, 0);
+        });
         
     }
     
@@ -202,15 +202,15 @@
             var x = (e.pageX - offsetLeft),
                 y = (e.pageY - offsetTop);
             
-            setTimeout(function() {
+            animate(function() {
                 tooltip.style.left = ((x < halfWidth) ? x : (x - tooltip.offsetWidth)) + 'px';
                 tooltip.style.top = ((y < halfHeight) ? y : (y - tooltip.offsetHeight)) + 'px';
-            }, 0);
+            });
             
             if (datum.d === lastHash)
                 return false;
             
-            setTimeout(function() {
+            animate(function() {
                 _html(valueClose, datum.c);
                 _html(valueOpen, datum.o);
                 _html(valueHigh, datum.h);
@@ -222,9 +222,9 @@
 
                 var name = datum.c === datum.o ? 'blue' : (datum.c > datum.o ? 'green' : 'red');
                 tooltip.setAttribute('name', name);
-            }, 0);
+            });
             
-            setTimeout(function() {
+            animate(function() {
                 // formerly selected candle.
                 if(formerIndex !== -1) {
                     var candleOffsetFormer = formerIndex * thickness,
@@ -238,7 +238,7 @@
                 _drawCandleStickBody(context, datum, candleOffsetNew, thickness, min, max, height, true);
                 _drawCandleStickWick(context, datum, candleOffsetNew, thickness, min, max, height, true);
                 formerIndex = index;
-            }, 0);
+            });
             
             lastHash = datum.d;
         });
@@ -327,4 +327,4 @@
 	
 	window.ChutyChart = window.ChutyChart || ChutyChart || function() { console.log('ChutyChart library has encountered a problem!') };
 	
-})(window, document, Object, console, Math, setTimeout);
+})(window, document, Object, console, Math, window.requestAnimationFrame || function(f) { window.setTimeout(f, 0); } );
