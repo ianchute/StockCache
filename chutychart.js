@@ -40,7 +40,7 @@
         var thickness = customThickness || 10;
         var height = container.height =  canvas.height = context.canvas.clientHeight = customHeight || 400; // fullHeight
         
-        data = _data.slice(0, 2600);
+        data = _unique( _data.slice(0, 2600) );
         data.reverse();
         
         var width = canvas.width = context.canvas.clientWidth = data.length * thickness;
@@ -83,6 +83,22 @@
         _enableTooltip(canvas, container, thickness, data, context, candleStickAreaHeight, min, max, volume.min, volume.max, volumeAreaHeight, volume.threshold);
         
         container.scrollLeft = container.scrollWidth;
+        
+    }
+    
+    function _unique(a){
+    
+        var dates = [], values = [];
+        
+        for(var i = 0; i < a.length; i++){
+            var date = new Date(a[i].d * 1000).toDateString();
+            if(dates.indexOf(date) === -1) {
+                dates.push(date);
+                values.push(a[i]);
+            }
+        }
+        
+        return values;
         
     }
     
@@ -306,7 +322,8 @@
             
         }
         
-        return data.concat(interpolatedData).sort(function(a, b) { return b.d - a.d; });
+        var result = data.concat(interpolatedData).sort(function(a, b) { return b.d - a.d; });
+        return result;
     
     }
     
@@ -331,9 +348,7 @@
             
         for(i = 0; i < days - 1; ++i) {
         
-            var date = new Date( current.d * 1000 );
-            date.setDate( date.getDate() + 1 );
-            current.d = date.getTime() / 1000;
+            current.d += (60 * 60 * 24);
             
             current.o += interval.o;
             current.h += interval.h;
