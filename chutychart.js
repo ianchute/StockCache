@@ -255,6 +255,7 @@
                 _html(valueVolume, datum.vos);
                 _html(valueChange, datum.cs);
                 _html(valueValue, datum.vas);
+                _html(valueNotes, datum.v >= volumeThreshold ? 'V-Outlier' : 'None');
 
                 var color = datum.c === datum.o ? 'gray' : (datum.c > datum.o ? 'green' : 'red');
                 tooltip.setAttribute('name', color);
@@ -290,7 +291,8 @@
         valueDate,
         valueVolume,
         valueChange,
-        valueValue;
+        valueValue,
+        valueNotes;
         
     function _generateElement(element) {
         return document.createElement(element);
@@ -315,8 +317,9 @@
             date = _generateElement('tr'),
             volume = _generateElement('tr'),
             change = _generateElement('tr'),
-            value = _generateElement('tr');
-           
+            value = _generateElement('tr'),
+            notes = _generateElement('tr');
+        
         var labelClose = _appendChild(close, _generateElement('td'));
         var labelOpen = _appendChild(open, _generateElement('td'));
         var labelHigh = _appendChild(high, _generateElement('td'));
@@ -325,6 +328,7 @@
         var labelVolume = _appendChild(volume, _generateElement('td'));
         var labelChange = _appendChild(change, _generateElement('td'));
         var labelValue =  _appendChild(value, _generateElement('td'));
+        var labelNotes = _appendChild(notes, _generateElement('td'));
         
         _html(labelClose, 'Close');
         _html(labelOpen, 'Open');
@@ -334,6 +338,7 @@
         _html(labelVolume, 'Volume');
         _html(labelChange, 'Change');
         _html(labelValue, 'Value');
+        _html(labelNotes, 'Remarks');
 
         valueClose = _appendChild(close, _generateElement('td'));
         valueOpen = _appendChild(open, _generateElement('td'));
@@ -343,6 +348,7 @@
         valueVolume = _appendChild(volume, _generateElement('td'));
         valueChange = _appendChild(change, _generateElement('td'));
         valueValue =  _appendChild(value, _generateElement('td'));
+        valueNotes = _appendChild(notes, _generateElement('td'));
         
         tooltip.className = 'chutyChartTooltip';
         
@@ -354,6 +360,7 @@
         _appendChild(tbody, volume);
         _appendChild(tbody, change); 
         _appendChild(tbody, value);
+        _appendChild(tbody, notes);
         _appendChild(tooltip, tbody);
         
         tooltip.id = 'chutyChartTooltip';
