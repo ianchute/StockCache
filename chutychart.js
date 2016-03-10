@@ -14,10 +14,14 @@
         return this._fillRect(round(a), round(b), round(c), round(d));
     };
     
-    function ChutyChart(id, data, customHeight, customThickness) {
+    function ChutyChart(id, data, interpolate, customHeight, customThickness) {
         
         animate(function() {
-            _ChutyChart(id, data, customHeight, customThickness);
+            if(typeof interpolate === 'boolean' && interpolate) {
+                _ChutyChart(id, _interpolate( data ), customHeight, customThickness);
+            } else {
+                _ChutyChart(id, data, customHeight, customThickness);
+            }
         });
         
     }
@@ -88,10 +92,13 @@
             open = datum.o,
             high = datum.h,
             low = datum.l,
-            color = datum.c === datum.o ? 'gray' : (datum.c > datum.o ? 'green' : 'red'),
+            isInterpolate = typeof datum.isInterpolate !== 'undefined',
+            color = isInterpolate
+                ? datum.c === datum.o ? 'cornflowerblue' : (datum.c > datum.o ? 'seagreen' : 'tomato')
+                : datum.c === datum.o ? 'gray' : (datum.c > datum.o ? 'green' : 'red'),
             isGreen = color === 'green';
         
-        context.fillStyle = selected ? 'yellow' : color;
+        context.fillStyle = (selected ? 'yellow' : color);
         var top = isGreen ? _normalize(close, min, max, height) : _normalize(open, min, max, height);
         var candleHeight = (isGreen ? _normalize(open, min, max, height) : _normalize(close, min, max, height)) - top;
         ++candleHeight;
@@ -112,7 +119,7 @@
             top = _normalize(high, min, max, height),
             _height = _normalize(low, min, max, height) - top;
         
-        context.fillStyle = selected ? 'yellow' : 'white';
+        context.fillStyle = (selected ? 'yellow' : 'white');
         context.fillRect(
             x + thickness / 2 - 1,
             top,
@@ -123,13 +130,17 @@
     
     function _drawVolume(context, datum, x, thickness, min, max, height, yOffset, threshold, selected) {
         
-        var color = datum.c === datum.o ? 'gray' : (datum.c > datum.o ? 'green' : 'red'),
+        var isInterpolate = typeof datum.isInterpolate !== 'undefined',
+            color = isInterpolate
+                ? datum.c === datum.o ? 'cornflowerblue' : (datum.c > datum.o ? 'seagreen' : 'tomato')
+                : datum.c === datum.o ? 'gray' : (datum.c > datum.o ? 'green' : 'red'),
             volume = datum.v,
             isGreen = color === 'green';
-            
-        color = (typeof threshold !== 'undefined' && datum.v >= threshold) 
-            ? (datum.c === datum.o ? 'cornflowerblue' : (datum.c > datum.o ? 'purple' : 'darkgoldenrod')) 
-            : color;
+        
+        if(!isInterpolate) // TODO
+            color = (typeof threshold !== 'undefined' && datum.v >= threshold)
+                ? (datum.c === datum.o ? 'cornflowerblue' : (datum.c > datum.o ? 'purple' : 'darkgoldenrod'))
+                : color;
         
         var top = (typeof threshold !== 'undefined' && datum.v >= threshold) 
             ? _normalize(volume, threshold, max, height)
@@ -231,6 +242,74 @@
         datum.vos = datum.v.toLocaleString(),
         datum.cs = Math.round((datum.c - datum.o) / datum.o * 10000) / 100 + '%',
         datum.vas = (Math.round((datum.c + datum.o) / 2 * datum.v)).toLocaleString();
+    }
+    
+    function _interpolate(data) {
+    
+        data = data.sort(function(a, b) { return a.d - b.d; });
+    
+        var i, interpolatedData = [];
+        for(i = 0; i < data.length - 1; ++i) {
+            
+            var first = data[i],
+                second = data[i + 1],
+                firstDate = new Date(first.d * 1000),
+                secondDate = new Date(second.d * 1000),
+                interpolates = _interpolatePair(first, second);
+            
+            interpolatedData = interpolatedData.concat(interpolates);
+            
+        }
+        
+        return data.concat(interpolatedData).sort(function(a, b) { return b.d - a.d; });
+    
+    }
+    
+    function _interpolatePair(first, second) {
+    
+        var days = (second.d - first.d) / (60 * 60 * 24);
+        
+        if(days <= 1)
+            return [];
+        
+        var i = 0,
+            interval = {
+                o : (second.o - first.o) / days,
+                h : (second.h - first.h) / days,
+                l : (second.l - first.l) / days,
+                c : (second.c - first.c) / days,
+                v : (second.v - first.v) / days
+            }
+            
+        var results = [], 
+            current = first;
+            
+        for(i = 0; i < days - 1; ++i) {
+        
+            var date = new Date( current.d * 1000 );
+            date.setDate( date.getDate() + 1 );
+            current.d = date.getTime() / 1000;
+            
+            current.o += interval.o;
+            current.h += interval.h;
+            current.l += interval.l;
+            current.c += interval.c;
+            current.v += interval.v;
+            
+            current.o = Math.round(current.o * 100) / 100;
+            current.h = Math.round(current.h * 100) / 100;
+            current.l = Math.round(current.l * 100) / 100;
+            current.c = Math.round(current.c * 100) / 100;
+            current.v = Math.round(current.v * 100) / 100;
+            
+            current.isInterpolate = true;
+            
+            results.push( JSON.parse(JSON.stringify(current)) );
+            
+        }
+        
+        return results;
+        
     }
     
     function getWeekNumber(d) {
