@@ -94,15 +94,29 @@
             low = datum.l,
             isInterpolate = typeof datum.isInterpolate !== 'undefined',
             color = isInterpolate
-                ? datum.c === datum.o ? 'cornflowerblue' : (datum.c > datum.o ? 'seagreen' : 'tomato')
+                ? datum.c === datum.o ? 'rgba(128, 128, 128, 0.2)' : (datum.c > datum.o ? 'rgba(0,128,0, 0.2)' : 'rgba(255,0,0, 0.2)')
                 : datum.c === datum.o ? 'gray' : (datum.c > datum.o ? 'green' : 'red'),
             isGreen = color === 'green';
         
-        context.fillStyle = (selected ? 'yellow' : color);
         var top = isGreen ? _normalize(close, min, max, height) : _normalize(open, min, max, height);
         var candleHeight = (isGreen ? _normalize(open, min, max, height) : _normalize(close, min, max, height)) - top;
         ++candleHeight;
         
+        /* resetting */
+            
+        if(isInterpolate) {
+            context.fillStyle = 'black';
+            context.fillRect(
+                x,
+                top,
+                thickness,
+                candleHeight
+            );
+        }
+        
+        /* end resetting */
+        
+        context.fillStyle = (selected ? 'yellow' : color);
         context.fillRect(
             x,
             top,
@@ -117,9 +131,26 @@
         var high = datum.h,
             low = datum.l,
             top = _normalize(high, min, max, height),
-            _height = _normalize(low, min, max, height) - top;
+            _height = _normalize(low, min, max, height) - top,
+            isInterpolate = typeof datum.isInterpolate !== 'undefined';
+            
+        /* resetting */
         
-        context.fillStyle = (selected ? 'yellow' : 'white');
+        if(isInterpolate) {
+            context.fillStyle = 'black';
+            context.fillRect(
+                x,
+                top,
+                thickness,
+                _height
+            );
+        }
+        
+        /* end resetting */
+        
+        context.fillStyle = isInterpolate 
+            ? (selected ? 'rgba(255, 255, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)')
+            : (selected ? 'yellow' : 'white');
         context.fillRect(
             x + thickness / 2 - 1,
             top,
@@ -132,7 +163,7 @@
         
         var isInterpolate = typeof datum.isInterpolate !== 'undefined',
             color = isInterpolate
-                ? datum.c === datum.o ? 'cornflowerblue' : (datum.c > datum.o ? 'seagreen' : 'tomato')
+                ? datum.c === datum.o ? 'rgba(128, 128, 128, 0.2)' : (datum.c > datum.o ? 'rgba(0,128,0, 0.2)' : 'rgba(255,0,0, 0.2)')
                 : datum.c === datum.o ? 'gray' : (datum.c > datum.o ? 'green' : 'red'),
             volume = datum.v,
             isGreen = color === 'green';
@@ -147,6 +178,20 @@
             : _normalize(volume, min, threshold, height);
         var _height = height - top;
         ++_height;
+        
+        /* resetting */
+            
+        if(isInterpolate) {
+            context.fillStyle = 'black';
+            context.fillRect(
+                x,
+                top + yOffset,
+                thickness,
+                _height
+            );
+        }
+        
+        /* end resetting */
         
         context.fillStyle = selected ? 'yellow' : color;
         context.fillRect(
