@@ -356,11 +356,11 @@
             current.c += interval.c;
             current.v += interval.v;
             
-            current.o = Math.round(current.o * 100) / 100;
-            current.h = Math.round(current.h * 100) / 100;
-            current.l = Math.round(current.l * 100) / 100;
-            current.c = Math.round(current.c * 100) / 100;
-            current.v = Math.round(current.v * 100) / 100;
+            current.o = Math.round(current.o * 10000) / 10000;
+            current.h = Math.round(current.h * 10000) / 10000;
+            current.l = Math.round(current.l * 10000) / 10000;
+            current.c = Math.round(current.c * 10000) / 10000;
+            current.v = Math.round(current.v * 10000) / 10000;
             
             current.isInterpolate = true;
             
