@@ -69,6 +69,7 @@
             _drawCandleStickWick(context, datum, xPos, thickness, min, max, candleStickAreaHeight);
             _drawCandleStickBody(context, datum, xPos, thickness, min, max, candleStickAreaHeight);
             _drawVolume(context, datum, xPos, thickness, volume.min, volume.max, volumeAreaHeight, candleStickAreaHeight, volume.threshold);
+            _drawWeekSeparatorLine(context, datum.d, xPos, height);
             _drawMonthSeparatorLine(context, datum.d, xPos, height);
             xPos += thickness;
             
@@ -171,6 +172,27 @@
         lastMonth = currentMonth;
     }
     
+    var lastWeek = -1;
+    function _drawWeekSeparatorLine(context, date, x, height) {
+    
+        var dateObject = new Date(date * 1000);
+        var currentWeek = getWeekNumber( dateObject );
+        
+        if ( currentWeek !== lastWeek
+             && typeof selected === 'undefined' ) { // once a selected parameter is supplied, it means that this is for the select-deselect portion of the code.
+            
+            context.fillStyle = "rgba(101, 156, 239, 0.1)";
+            context.fillRect(
+                x,
+                0,
+                1,
+                height
+            );
+        }
+        
+        lastWeek = currentWeek;
+    }
+    
     function _getStatistics(data, map) {
         
         if(data.length === 0) 
@@ -209,6 +231,17 @@
         datum.vos = datum.v.toLocaleString(),
         datum.cs = Math.round((datum.c - datum.o) / datum.o * 10000) / 100 + '%',
         datum.vas = (Math.round((datum.c + datum.o) / 2 * datum.v)).toLocaleString();
+    }
+    
+    function getWeekNumber(d) {
+    
+        d = new Date(+d);
+        d.setHours(0,0,0);
+        d.setDate(d.getDate() + 4 - (d.getDay()||7));
+        var yearStart = new Date(d.getFullYear(),0,1);
+        var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+        return weekNo;
+        
     }
     
     function _enableTooltip(canvas, container, thickness, data, context, height, min, max, vmin, vmax, volumeHeight, volumeThreshold) {
