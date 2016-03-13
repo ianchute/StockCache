@@ -4,7 +4,7 @@
  *  By: Ian Herve U. Chu Te
  */
 
-(function(window, document, Object, console, Math, animate, CanvasRenderingContext2D, round, THRESHOLD_RATIO) {
+(function(window, document, Object, console, Math, animate, CanvasRenderingContext2D, round, clone, THRESHOLD_RATIO) {
     
     const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     
@@ -364,7 +364,7 @@
             
             current.isInterpolate = true;
             
-            results.push( JSON.parse(JSON.stringify(current)) );
+            results.push( clone( current ) );
             
         }
         
@@ -553,4 +553,5 @@ Math,
 window.requestAnimationFrame || function(f) { window.setTimeout(f, 0); }, 
 CanvasRenderingContext2D, 
 function (n) { return (n + 0.5) | 0; },
+function (o) { return JSON.parse(JSON.stringify(o)); },
 2);
