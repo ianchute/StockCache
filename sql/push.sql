@@ -45,3 +45,8 @@
     -- c. value decimal, varchar
     -- d. is interpolation?
     -- e. remarks
+
+CREATE TABLE Symbol (
+	id AUTOINCREMENT PRIMARY KEY,
+	name VARCHAR(10)
+);
