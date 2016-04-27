@@ -1,181 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <title>Stock Cache</title>
-    <script src="stockdata.js"></script>
-    <script src="chutychart.js"></script>
-    <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        canvas {
-            -webkit-filter: brightness(150%); 
-        }
-        ::-webkit-input-placeholder { /* WebKit browsers */
-            text-transform: none;
-        }
-        :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-            text-transform: none;
-        }
-        ::-moz-placeholder { /* Mozilla Firefox 19+ */
-            text-transform: none;
-        }
-        :-ms-input-placeholder { /* Internet Explorer 10+ */
-            text-transform: none;
-        }
-        .chutyChartTooltip {
-            position: absolute;
-            font-size: xx-small;
-        }
-        .chutyChartTooltip[name=red] {
-            background-color: rgba(256, 0, 0, 0.5);
-        }
-        .chutyChartTooltip[name=gray] {
-            background-color: rgba(190, 190, 190, 0.5);
-        }
-        .chutyChartTooltip[name=green] {
-            background-color: rgba(0, 256, 0, 0.5);
-        }
-        .chutyChartTooltip tr {
-            border-bottom: 1px solid white;
-        }
-        .chutyChartTooltip tr:last-child {
-            border-bottom: none;
-        }
-        .chutyChartTooltip td {
-            color: white;
-            position: relative;
-            padding: 2px;
-        }
-        .chutyChartTooltip td:first-child {
-            font-weight: bold;
-        }
-        .chutyChartTooltip td:last-child {
-            text-align: right;
-        }
-        tr[name=red] {
-            background-color: rgba(256, 0, 0, 0.5) !important;
-        }
-        tr[name=gray] {
-            background-color: rgba(190, 190, 190, 0.5) !important;
-        }
-        tr[name=green] {
-            background-color: rgba(0, 256, 0, 0.5) !important;
-        }
-        
-    </style>
+  <title>Stock Cache</title>
+  <script src="stockdata.js"></script>
+  <script src="chutychart.js"></script>
+  <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    canvas {
+      -webkit-filter: brightness(150%);
+    }
+
+    ::-webkit-input-placeholder {
+      /* WebKit browsers */
+      text-transform: none;
+    }
+
+    :-moz-placeholder {
+      /* Mozilla Firefox 4 to 18 */
+      text-transform: none;
+    }
+
+    ::-moz-placeholder {
+      /* Mozilla Firefox 19+ */
+      text-transform: none;
+    }
+
+    :-ms-input-placeholder {
+      /* Internet Explorer 10+ */
+      text-transform: none;
+    }
+
+    .chutyChartTooltip {
+      position: absolute;
+      font-size: xx-small;
+    }
+
+    .chutyChartTooltip[name=red] {
+      background-color: rgba(256, 0, 0, 0.5);
+    }
+
+    .chutyChartTooltip[name=gray] {
+      background-color: rgba(190, 190, 190, 0.5);
+    }
+
+    .chutyChartTooltip[name=green] {
+      background-color: rgba(0, 256, 0, 0.5);
+    }
+
+    .chutyChartTooltip tr {
+      border-bottom: 1px solid white;
+    }
+
+    .chutyChartTooltip tr:last-child {
+      border-bottom: none;
+    }
+
+    .chutyChartTooltip td {
+      color: white;
+      position: relative;
+      padding: 2px;
+    }
+
+    .chutyChartTooltip td:first-child {
+      font-weight: bold;
+    }
+
+    .chutyChartTooltip td:last-child {
+      text-align: right;
+    }
+
+    tr[name=red] {
+      background-color: rgba(256, 0, 0, 0.5) !important;
+    }
+
+    tr[name=gray] {
+      background-color: rgba(190, 190, 190, 0.5) !important;
+    }
+
+    tr[name=green] {
+      background-color: rgba(0, 256, 0, 0.5) !important;
+    }
+
+  </style>
 </head>
+
 <body>
-	<nav class="navbar navbar-default">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<a class="navbar-brand" href="http://stockcache.net/">Stock Cache</a>
-			</div>
-		</div>
-	</nav>
-	<div class="container">
-		<div class="row">
-			<div class="col-xs-12 col-md-2">
-				<input class="form-control" type="text" id="txtTicker" value="ION" placeholder="ticker (e.g. TEL)" style="text-transform:uppercase"></input>
-			</div>
-			<div class="col-xs-12 col-md-5">
-				<input class="form-control" type="text" id="txtQuery" placeholder="query (e.g. @open>2.05,@close<1.98)"></input>
-			</div>
-		</div>
-		<br/>
-		<div class="row">
-			<div class="col-xs-6 col-md-2">
-				<button class="btn btn-primary" id="btnGet">Get Stock Data</button>
-			</div>
-            <div class="col-xs-6 col-md-2">
-				<button class="btn btn-primary" id="btnGetInterpolated">Interpolate</button>
-			</div>
-		</div>
-		<br/>
-		<div class="row">
-			<div class="col-xs-12 col-md-12" style="display:none" id="loading">
-				<img src="hourglass.svg"/>
-			</div>
-		</div>
-		<br/>
-		<div class="row">
-			<div class="col-xs-12 col-md-12">
-				<div id="dataCanvas"></div>
-			</div>
-		</div>
-		<br/>
-		<div class="row">
-			<div class="col-xs-12 col-md-12">
-				<table class="table table-bordered table-striped" id="content"></table>
-			</div>
-		</div>
-	</div>
-	<script>
-        var btnGet = document.getElementById('btnGet'),
-            btnInterpolate = document.getElementById('btnGetInterpolated');
-    
-		btnGet.addEventListener('click', function() {
-	
-            var button = this,
-                loading = document.getElementById('loading'),
-                dataCanvas = document.getElementById('dataCanvas'),
-                content = document.getElementById('content');
-            loading.style.display = 'block';
-            dataCanvas.style.display = 'none';
-            content.style.display = 'none';
-            button.setAttribute('disabled', 'true');
-            button.innerHTML = 'Loading...';
-			
-			var ticker = document.getElementById('txtTicker').value;
-			var query = document.getElementById('txtQuery').value;
-			StockDataTable( 'content', ticker, query ? query : false, function(data) {
-				loading.style.display = 'none';
-				dataCanvas.style.display = 'block';
-                content.style.display = 'table';
-				dataCanvas.width = content.offsetWidth;
-                button.removeAttribute('disabled');
-                button.innerHTML = 'Get Stock Data';
-			}, function(data) { ChutyChart('dataCanvas', data) });
-	
-		}, false);
-        
-        btnInterpolate.addEventListener('click', function() {
-	
-            var button = this,
-                loading = document.getElementById('loading'),
-                dataCanvas = document.getElementById('dataCanvas'),
-                content = document.getElementById('content');
-            loading.style.display = 'block';
-            dataCanvas.style.display = 'none';
-            content.style.display = 'none';
-            button.setAttribute('disabled', 'true');
-            button.innerHTML = 'Loading...';
-			
-			var ticker = document.getElementById('txtTicker').value;
-			var query = document.getElementById('txtQuery').value;
-			StockDataTable( 'content', ticker, query ? query : false, function(data) {
-				loading.style.display = 'none';
-				dataCanvas.style.display = 'block';
-                content.style.display = 'table';
-				dataCanvas.width = content.offsetWidth;
-                button.removeAttribute('disabled');
-                button.innerHTML = 'Interpolate';
-			}, function(data) { ChutyChart('dataCanvas', data, true) });
-	
-		}, false);
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="http://stockcache.net/">Stock Cache</a>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-md-2">
+        <input class="form-control" type="text" id="txtTicker" value="ION" placeholder="ticker (e.g. TEL)" style="text-transform:uppercase"></input>
+      </div>
+      <div class="col-xs-12 col-md-5">
+        <input class="form-control" type="text" id="txtQuery" placeholder="query (e.g. @open>2.05,@close<1.98)"></input>
+      </div>
+    </div>
+    <br/>
+    <div class="row">
+      <div class="col-xs-6 col-md-2">
+        <button class="btn btn-primary" id="btnGet">Get Stock Data</button>
+      </div>
+      <div class="col-xs-6 col-md-2">
+        <button class="btn btn-primary" id="btnGetInterpolated">Interpolate</button>
+      </div>
+    </div>
+    <br/>
+    <div class="row">
+      <div class="col-xs-12 col-md-12" style="display:none" id="loading">
+        <img src="hourglass.svg" />
+      </div>
+    </div>
+    <br/>
+    <div class="row">
+      <div class="col-xs-12 col-md-12">
+        <div id="dataCanvas"></div>
+      </div>
+    </div>
+    <br/>
+    <div class="row">
+      <div class="col-xs-12 col-md-12">
+        <table class="table table-bordered table-striped" id="content"></table>
+      </div>
+    </div>
+  </div>
+  <script>
+    var btnGet = document.getElementById('btnGet'),
+      btnInterpolate = document.getElementById('btnGetInterpolated');
 
-        btnGet.click();
-        
-        /*
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    btnGet.addEventListener('click', function() {
 
-        ga('create', 'UA-73150504-1', 'auto');
-        ga('send', 'pageview');
-        */
+      var button = this,
+        loading = document.getElementById('loading'),
+        dataCanvas = document.getElementById('dataCanvas'),
+        content = document.getElementById('content');
+      loading.style.display = 'block';
+      dataCanvas.style.display = 'none';
+      content.style.display = 'none';
+      button.setAttribute('disabled', 'true');
+      button.innerHTML = 'Loading...';
 
-        
-	</script>
+      var ticker = document.getElementById('txtTicker').value;
+      var query = document.getElementById('txtQuery').value;
+      StockDataTable('content', ticker, query ? query : false, function(data) {
+        loading.style.display = 'none';
+        dataCanvas.style.display = 'block';
+        content.style.display = 'table';
+        dataCanvas.width = content.offsetWidth;
+        button.removeAttribute('disabled');
+        button.innerHTML = 'Get Stock Data';
+      }, function(data) {
+        ChutyChart('dataCanvas', data)
+      });
+
+    }, false);
+
+    btnInterpolate.addEventListener('click', function() {
+
+      var button = this,
+        loading = document.getElementById('loading'),
+        dataCanvas = document.getElementById('dataCanvas'),
+        content = document.getElementById('content');
+      loading.style.display = 'block';
+      dataCanvas.style.display = 'none';
+      content.style.display = 'none';
+      button.setAttribute('disabled', 'true');
+      button.innerHTML = 'Loading...';
+
+      var ticker = document.getElementById('txtTicker').value;
+      var query = document.getElementById('txtQuery').value;
+      StockDataTable('content', ticker, query ? query : false, function(data) {
+        loading.style.display = 'none';
+        dataCanvas.style.display = 'block';
+        content.style.display = 'table';
+        dataCanvas.width = content.offsetWidth;
+        button.removeAttribute('disabled');
+        button.innerHTML = 'Interpolate';
+      }, function(data) {
+        ChutyChart('dataCanvas', data, true)
+      });
+
+    }, false);
+
+    btnGet.click();
+
+    /*
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-73150504-1', 'auto');
+    ga('send', 'pageview');
+    */
+
+  </script>
 </body>
+
 </html>
