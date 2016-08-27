@@ -17,8 +17,8 @@
         exit;
     }
 
-    require_once 'PHPLinq.php';
-    require_once 'PHPLinq/LinqToObjects.php';
+    // require_once 'PHPLinq.php';
+    // require_once 'PHPLinq/LinqToObjects.php';
 
     header('Content-type: application/json');
 
