@@ -3,87 +3,12 @@
 
 <head>
   <title>Stock Cache</title>
+  <script src="https://cdn.firebase.com/js/client/2.2.7/firebase.js" charset="utf-8"></script>
   <script src="stockdata.js"></script>
   <script src="chutychart.js"></script>
   <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    canvas {
-      -webkit-filter: brightness(150%);
-    }
-
-    ::-webkit-input-placeholder {
-      /* WebKit browsers */
-      text-transform: none;
-    }
-
-    :-moz-placeholder {
-      /* Mozilla Firefox 4 to 18 */
-      text-transform: none;
-    }
-
-    ::-moz-placeholder {
-      /* Mozilla Firefox 19+ */
-      text-transform: none;
-    }
-
-    :-ms-input-placeholder {
-      /* Internet Explorer 10+ */
-      text-transform: none;
-    }
-
-    .chutyChartTooltip {
-      position: absolute;
-      font-size: xx-small;
-    }
-
-    .chutyChartTooltip[name=red] {
-      background-color: rgba(256, 0, 0, 0.5);
-    }
-
-    .chutyChartTooltip[name=gray] {
-      background-color: rgba(190, 190, 190, 0.5);
-    }
-
-    .chutyChartTooltip[name=green] {
-      background-color: rgba(0, 256, 0, 0.5);
-    }
-
-    .chutyChartTooltip tr {
-      border-bottom: 1px solid white;
-    }
-
-    .chutyChartTooltip tr:last-child {
-      border-bottom: none;
-    }
-
-    .chutyChartTooltip td {
-      color: white;
-      position: relative;
-      padding: 2px;
-    }
-
-    .chutyChartTooltip td:first-child {
-      font-weight: bold;
-    }
-
-    .chutyChartTooltip td:last-child {
-      text-align: right;
-    }
-
-    tr[name=red] {
-      background-color: rgba(256, 0, 0, 0.5) !important;
-    }
-
-    tr[name=gray] {
-      background-color: rgba(190, 190, 190, 0.5) !important;
-    }
-
-    tr[name=green] {
-      background-color: rgba(0, 256, 0, 0.5) !important;
-    }
-
-  </style>
+  <link rel="stylesheet" href="style.css" media="screen" title="no title" charset="utf-8">
 </head>
 
 <body>
@@ -96,19 +21,16 @@
   </nav>
   <div class="container">
     <div class="row">
-      <div class="col-xs-12 col-md-2">
-        <input class="form-control" type="text" id="txtTicker" value="ION" placeholder="ticker (e.g. TEL)" style="text-transform:uppercase"></input>
-      </div>
-      <div class="col-xs-12 col-md-5">
-        <input class="form-control" type="text" id="txtQuery" placeholder="query (e.g. @open>2.05,@close<1.98)"></input>
+      <div class="col-xs-12 col-md-3">
+        <input class="form-control" type="text" id="txtTicker" value="MRSGI" placeholder="ticker (e.g. TEL)" style="text-transform:uppercase"></input>
       </div>
     </div>
     <br/>
     <div class="row">
-      <div class="col-xs-6 col-md-2">
-        <button class="btn btn-primary" id="btnGet">Get Stock Data</button>
+      <div class="col-xs-6 col-md-1">
+        <button class="btn btn-primary" id="btnGet">View Chart</button>
       </div>
-      <div class="col-xs-6 col-md-2">
+      <div class="col-xs-6 col-md-1">
         <button class="btn btn-primary" id="btnGetInterpolated">Interpolate</button>
       </div>
     </div>
@@ -120,7 +42,7 @@
     </div>
     <br/>
     <div class="row">
-      <div class="col-xs-12 col-md-12">
+      <div class="col-xs-12 col-md-12" class="canvasWrapper">
         <div id="dataCanvas"></div>
       </div>
     </div>
@@ -148,14 +70,13 @@
       button.innerHTML = 'Loading...';
 
       var ticker = document.getElementById('txtTicker').value;
-      var query = document.getElementById('txtQuery').value;
-      StockDataTable('content', ticker, query ? query : false, function(data) {
+      StockDataTable('content', ticker, function(data) {
         loading.style.display = 'none';
         dataCanvas.style.display = 'block';
         content.style.display = 'table';
         dataCanvas.width = content.offsetWidth;
         button.removeAttribute('disabled');
-        button.innerHTML = 'Get Stock Data';
+        button.innerHTML = 'View Chart';
       }, function(data) {
         ChutyChart('dataCanvas', data)
       });
@@ -175,8 +96,7 @@
       button.innerHTML = 'Loading...';
 
       var ticker = document.getElementById('txtTicker').value;
-      var query = document.getElementById('txtQuery').value;
-      StockDataTable('content', ticker, query ? query : false, function(data) {
+      StockDataTable('content', ticker, function(data) {
         loading.style.display = 'none';
         dataCanvas.style.display = 'block';
         content.style.display = 'table';

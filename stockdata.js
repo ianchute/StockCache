@@ -1,23 +1,30 @@
+var fb = {
+  "url": "https://stock-2d1d3.firebaseio.com",
+  "secret": "Nw6LfnA21cN1DVvdZ73csAEx5OalUPqTGeEcx2ok"
+}
 
+var root = new Firebase(fb.url)
 
-function StockData(ticker, query, callback) {
+function StockData(ticker, callback) {
 
-  var r = new XMLHttpRequest();
-  r.open('GET', 'stockdata?s=' + ticker
-  + (query ? ('&q=' + query) : ''), true);
-  r.onreadystatechange = function () {
-    if (r.readyState != 4 || r.status != 200) return;
-    var data = JSON.parse(r.responseText);
-    callback(data);
-  };
-
-  r.send();
+  root.authWithCustomToken(fb.secret, function() {
+    root.child('stock/' + ticker.toUpperCase()).once('value', function(snap) {
+      var data = snap.val()
+      var keys = Object.keys(data)
+      var transformedData = keys.map(function(key) {
+        var datum = data[key];
+        datum.d = Number(key);
+        return datum;
+      });
+      callback(transformedData);
+    })
+  })
 
 }
 
-function StockDataTable(id, ticker, query, callback, doWith) {
+function StockDataTable(id, ticker, callback, doWith) {
 
-  StockData(ticker, query, function (data) {
+  StockData(ticker, function (data) {
 
     doWith(data);
 
@@ -26,7 +33,7 @@ function StockDataTable(id, ticker, query, callback, doWith) {
       var contentElement = document.getElementById('content');
       var content = '<thead class="thead-default"><tr><th>Date</th><th>Open</th><th>High</th><th>Low</th><th>Close</th><th>% Change</th><th>Volume</th><th>Value</th></tr></thead><tbody>';
 
-      data.forEach(function (datum, index) {
+      data.sort(function(a, b) { return b.d - a.d }).forEach(function (datum, index) {
 
         var close = datum.c,
             open = datum.o,

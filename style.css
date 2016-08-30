@@ -1,0 +1,100 @@
+body {
+  background: url('geometry.png');
+}
+
+canvas {
+  -webkit-filter: brightness(150%);
+}
+
+::-webkit-input-placeholder {
+  /* WebKit browsers */
+  text-transform: none;
+}
+
+:-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  text-transform: none;
+}
+
+::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  text-transform: none;
+}
+
+:-ms-input-placeholder {
+  /* Internet Explorer 10+ */
+  text-transform: none;
+}
+
+.chutyChartTooltip {
+  position: absolute;
+  font-size: xx-small;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.chutyChartTooltip[name=red] {
+  background-color: rgba(256, 0, 0, 0.5);
+  /*border: outset 2px rgba(256, 0, 0, 0.7);*/
+}
+
+.chutyChartTooltip[name=gray] {
+  background-color: rgba(190, 190, 190, 0.5);
+  /*border: outset 2px rgba(190, 190, 190, 0.7);*/
+}
+
+.chutyChartTooltip[name=green] {
+  background-color: rgba(0, 256, 0, 0.5);
+  /*border: outset 2px rgba(0, 256, 0, 0.7);*/
+}
+
+.chutyChartTooltip tr {
+  border-bottom: 1px solid white;
+}
+
+.chutyChartTooltip tr:last-child {
+  border-bottom: none;
+}
+
+.chutyChartTooltip td {
+  color: white;
+  position: relative;
+  padding: 2px;
+}
+
+.chutyChartTooltip td:first-child {
+  font-weight: bold;
+}
+
+.chutyChartTooltip td:last-child {
+  text-align: right;
+}
+
+tr {
+  cursor: pointer;
+}
+
+tr[name=red] {
+  background-color: rgba(256, 0, 0, 0.5) !important;
+}
+
+tr[name=gray] {
+  background-color: rgba(256, 256, 256, 0.5) !important;
+}
+
+tr[name=green] {
+  background-color: rgba(0, 256, 0, 0.5) !important;
+}
+
+td {
+  color: black;
+}
+
+.table tr:hover > td {
+  -webkit-filter: brightness(200%);
+  font-weight: bold;
+}
+
+.canvasWrapper {
+  border-radius: 10px;
+}
