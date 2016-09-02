@@ -8,6 +8,12 @@ var root = new Firebase(fb.url)
 function StockData(ticker, callback) {
 
   root.authWithCustomToken(fb.secret, function() {
+    // log
+    root.child('logs').push({
+      tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      ticker: ticker,
+    });
+
     root.child('stock/' + ticker.toUpperCase()).once('value', function(snap) {
       var data = snap.val()
       var keys = Object.keys(data)

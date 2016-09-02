@@ -41,7 +41,7 @@
     var height = container.height =  canvas.height = context.canvas.clientHeight = customHeight || 400; // fullHeight
 
     data = _unique(_data.slice(0, 2600));
-    data.reverse();
+    data.sort(function(a, b) { return a.d - b.d; });
 
     var width = canvas.width = context.canvas.clientWidth = data.length * thickness;
 
