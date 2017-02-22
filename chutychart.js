@@ -4,6 +4,11 @@
  *  By: Ian Herve U. Chu Te
  */
 
+const black = '#222222';
+const green = '#0ce3ac';
+const red = '#e74c3c';
+const gray = '#464545';
+
 (function (window, document, Object, console, Math, animate, CanvasRenderingContext2D, round, clone, THRESHOLD_RATIO) {
 
   const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -114,8 +119,8 @@
         isInterpolate = typeof datum.isInterpolate !== 'undefined',
         color = isInterpolate
             ? datum.c === datum.o ? 'rgba(128, 128, 128, 0.2)' : (datum.c > datum.o ? 'rgba(0,128,0, 0.2)' : 'rgba(255,0,0, 0.2)')
-            : datum.c === datum.o ? 'gray' : (datum.c > datum.o ? 'green' : 'red'),
-        isGreen = color === 'green';
+            : datum.c === datum.o ? gray : (datum.c > datum.o ? green : red),
+        isGreen = color === green;
 
     var top = isGreen ? _normalize(close, min, max, height) : _normalize(open, min, max, height);
     var candleHeight = (isGreen ? _normalize(open, min, max, height) : _normalize(close, min, max, height)) - top;
@@ -124,7 +129,7 @@
     /* resetting */
 
     if (isInterpolate) {
-      context.fillStyle = 'black';
+      context.fillStyle = black;
       context.fillRect(
           x,
           top,
@@ -156,7 +161,7 @@
     /* resetting */
 
     if (isInterpolate) {
-      context.fillStyle = 'black';
+      context.fillStyle = black;
       context.fillRect(
           x,
           top,
@@ -183,9 +188,9 @@
     var isInterpolate = typeof datum.isInterpolate !== 'undefined',
         color = isInterpolate
             ? datum.c === datum.o ? 'rgba(128, 128, 128, 0.2)' : (datum.c > datum.o ? 'rgba(0,128,0, 0.2)' : 'rgba(255,0,0, 0.2)')
-            : datum.c === datum.o ? 'gray' : (datum.c > datum.o ? 'green' : 'red'),
+            : datum.c === datum.o ? gray : (datum.c > datum.o ? green : red),
         volume = datum.v,
-        isGreen = color === 'green';
+        isGreen = color === green;
 
     if (!isInterpolate) // TODO
         color = (typeof threshold !== 'undefined' && datum.v >= threshold)
@@ -201,7 +206,7 @@
     /* resetting */
 
     if (isInterpolate) {
-      context.fillStyle = 'black';
+      context.fillStyle = black;
       context.fillRect(
           x,
           top + yOffset,
@@ -433,7 +438,7 @@
         _html(valueValue, datum.vas);
         _html(valueNotes, datum.v >= volumeThreshold ? 'V-Outlier' : 'None');
 
-        var color = datum.c === datum.o ? 'gray' : (datum.c > datum.o ? 'green' : 'red');
+        var color = datum.c === datum.o ? gray : (datum.c > datum.o ? green : red);
         tooltip.setAttribute('name', color);
       });
 
