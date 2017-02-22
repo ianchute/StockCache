@@ -8,7 +8,7 @@ function StockData(ticker, callback) {
           callback(data);
       }
   }
-  xhr.open('GET', 'http://stock-cache-server.herokuapp.com/' + ticker, true);
+  xhr.open('GET', 'https://stock-cache-server.herokuapp.com/' + ticker, true);
   xhr.send(null);
 
 }
