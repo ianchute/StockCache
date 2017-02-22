@@ -1,30 +1,15 @@
-var fb = {
-  "url": "https://stock-2d1d3.firebaseio.com",
-  "secret": "Nw6LfnA21cN1DVvdZ73csAEx5OalUPqTGeEcx2ok"
-}
-
-var root = new Firebase(fb.url)
-
 function StockData(ticker, callback) {
 
-  root.authWithCustomToken(fb.secret, function() {
-    // log
-    root.child('logs').push({
-      tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      ticker: ticker,
-    });
-
-    root.child('stock/' + ticker.toUpperCase()).once('value', function(snap) {
-      var data = snap.val()
-      var keys = Object.keys(data)
-      var transformedData = keys.map(function(key) {
-        var datum = data[key];
-        datum.d = Number(key);
-        return datum;
-      });
-      callback(transformedData);
-    })
-  })
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+          const data = JSON.parse(xhr.responseText)
+            .map(({ Date, High, Low, Open, Close, Volume }) => ({ d: Date, h: High, l: Low, o: Open, c: Close, v: Volume }));
+          callback(data);
+      }
+  }
+  xhr.open('GET', 'http://stock-cache-server.herokuapp.com/' + ticker, true);
+  xhr.send(null);
 
 }
 
