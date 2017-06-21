@@ -4,11 +4,11 @@ function StockData(ticker, callback) {
   xhr.onreadystatechange = function() {
       if (xhr.readyState == XMLHttpRequest.DONE) {
           const data = JSON.parse(xhr.responseText)
-            .map(({ Date, High, Low, Open, Close, Volume }) => ({ d: Date, h: High, l: Low, o: Open, c: Close, v: Volume }));
+          data.forEach(d => d.d = d.t)
           callback(data);
       }
   }
-  xhr.open('GET', 'https://stock-cache-server.herokuapp.com/' + ticker, true);
+  xhr.open('GET', '//localhost:5000/' + ticker, true);
   xhr.send(null);
 
 }
