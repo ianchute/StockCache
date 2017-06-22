@@ -5,8 +5,8 @@
  */
 
 const black = '#222222';
-const green = '#0ce3ac';
-const red = '#e74c3c';
+const green = '#108a93';
+const red = '#ad1d28';
 const gray = '#464545';
 
 (function (window, document, Object, console, Math, animate, CanvasRenderingContext2D, round, clone, THRESHOLD_RATIO) {

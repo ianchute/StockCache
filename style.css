@@ -27,7 +27,7 @@
 }
 
 .chutyChartTooltip[name=red] {
-  background-color: #e74c3c;
+  background-color: #ad1d28;
   /*border: outset 2px rgba(256, 0, 0, 0.7);*/
 }
 
@@ -37,7 +37,7 @@
 }
 
 .chutyChartTooltip[name=green] {
-  background-color: #0ce3ac;
+  background-color: #108a93;
   /*border: outset 2px rgba(0, 256, 0, 0.7);*/
 }
 
@@ -68,7 +68,7 @@ tr {
 }
 
 tr[name=red] {
-  background-color: #e74c3c !important;
+  background-color: #ad1d28 !important;
 }
 
 tr[name=gray] {
@@ -76,7 +76,7 @@ tr[name=gray] {
 }
 
 tr[name=green] {
-  background-color: #0ce3ac !important;
+  background-color: #108a93 !important;
 }
 
 td {
